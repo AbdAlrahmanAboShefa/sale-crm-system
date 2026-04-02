@@ -16,6 +16,25 @@ The following bugs were identified and should be avoided in future code:
 
 ---
 
+## Git & Version Control
+
+**IMPORTANT**: When making changes to this codebase, follow this workflow:
+
+1. After completing successful changes (verified by tests or user confirmation), commit immediately:
+   ```bash
+   git add -A
+   git commit -m "Description of changes"
+   git push origin master
+   ```
+
+2. Only push when changes are successfully verified - do not push broken code.
+
+3. Keep commit messages descriptive but concise (under 72 characters for the first line).
+
+4. Do NOT commit sensitive files (`.env`, credentials, API keys, etc.).
+
+---
+
 ## Build/Lint/Test Commands
 
 ### Setup & Installation
