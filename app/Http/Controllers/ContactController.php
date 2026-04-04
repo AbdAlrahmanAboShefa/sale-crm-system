@@ -32,7 +32,9 @@ class ContactController extends Controller
 
     public function create(): View
     {
-        return view('contacts.create');
+        $routePrefix = $this->getRoutePrefix();
+
+        return view('contacts.create', compact('routePrefix'));
     }
 
     public function store(ContactRequest $request): RedirectResponse
@@ -44,21 +46,23 @@ class ContactController extends Controller
 
         Contact::create($data);
 
-        return redirect()->route($this->getRoutePrefix() . '.contacts.index')->with('success', 'Contact created successfully.');
+        return redirect()->route($this->getRoutePrefix().'.contacts.index')->with('success', 'Contact created successfully.');
     }
 
     public function show(Contact $contact): View
     {
         $this->authorizeContact($contact);
+        $routePrefix = $this->getRoutePrefix();
 
-        return view('contacts.show', compact('contact'));
+        return view('contacts.show', compact('contact', 'routePrefix'));
     }
 
     public function edit(Contact $contact): View
     {
         $this->authorizeContact($contact);
+        $routePrefix = $this->getRoutePrefix();
 
-        return view('contacts.edit', compact('contact'));
+        return view('contacts.edit', compact('contact', 'routePrefix'));
     }
 
     public function update(ContactRequest $request, Contact $contact): RedirectResponse
@@ -71,7 +75,7 @@ class ContactController extends Controller
 
         $contact->update($data);
 
-        return redirect()->route($this->getRoutePrefix() . '.contacts.show', $contact)->with('success', 'Contact updated successfully.');
+        return redirect()->route($this->getRoutePrefix().'.contacts.show', $contact)->with('success', 'Contact updated successfully.');
     }
 
     public function destroy(Contact $contact): RedirectResponse
@@ -80,14 +84,19 @@ class ContactController extends Controller
 
         $contact->delete();
 
-        return redirect()->route($this->getRoutePrefix() . '.contacts.index')->with('success', 'Contact deleted successfully.');
+        return redirect()->route($this->getRoutePrefix().'.contacts.index')->with('success', 'Contact deleted successfully.');
     }
 
     private function getRoutePrefix(): string
     {
         $user = auth()->user();
-        if ($user->hasRole('Admin')) return 'admin';
-        if ($user->hasRole('Manager')) return 'manager';
+        if ($user->hasRole('Admin')) {
+            return 'admin';
+        }
+        if ($user->hasRole('Manager')) {
+            return 'manager';
+        }
+
         return 'agent';
     }
 

@@ -29,6 +29,7 @@ class Activity extends Model
     ];
 
     const TYPES = ['Call', 'Meeting', 'Email', 'Task', 'Demo'];
+
     const OUTCOMES = ['Positive', 'Neutral', 'Negative'];
 
     public function contact(): BelongsTo

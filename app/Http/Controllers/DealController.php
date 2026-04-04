@@ -40,7 +40,7 @@ class DealController extends Controller
         $routePrefix = $this->getRoutePrefix();
 
         $kanban = $this->dealService->getKanbanData($isAdminOrManager, $user->id);
-        $forecast = $this->dealService->getForecastValue($isAdminOrManager, $user->id);
+        $forecast = ['total' => $this->dealService->getForecastValue($isAdminOrManager, $user->id), 'currency' => 'USD'];
         $users = $isAdminOrManager ? \App\Models\User::all() : collect();
 
         return view('deals.kanban', compact('kanban', 'forecast', 'users', 'isAdminOrManager', 'routePrefix'));
@@ -62,7 +62,7 @@ class DealController extends Controller
     {
         Deal::create($request->validated());
 
-        return redirect()->route($this->getRoutePrefix() . '.deals.index')
+        return redirect()->route($this->getRoutePrefix().'.deals.index')
             ->with('success', 'Deal created successfully.');
     }
 
@@ -94,7 +94,7 @@ class DealController extends Controller
 
         $deal->update($request->validated());
 
-        return redirect()->route($this->getRoutePrefix() . '.deals.show', $deal)
+        return redirect()->route($this->getRoutePrefix().'.deals.show', $deal)
             ->with('success', 'Deal updated successfully.');
     }
 
@@ -117,7 +117,7 @@ class DealController extends Controller
 
         $deal->delete();
 
-        return redirect()->route($this->getRoutePrefix() . '.deals.index')
+        return redirect()->route($this->getRoutePrefix().'.deals.index')
             ->with('success', 'Deal deleted successfully.');
     }
 
@@ -134,8 +134,13 @@ class DealController extends Controller
     private function getRoutePrefix(): string
     {
         $user = auth()->user();
-        if ($user->hasRole('Admin')) return 'admin';
-        if ($user->hasRole('Manager')) return 'manager';
+        if ($user->hasRole('Admin')) {
+            return 'admin';
+        }
+        if ($user->hasRole('Manager')) {
+            return 'manager';
+        }
+
         return 'agent';
     }
 }

@@ -22,17 +22,17 @@ class generatepromptrequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image'=>[
+            'image' => [
                 'required',
                 'file',
                 'image',
                 'mimes:jpeg,png,jpg,gif,svg',
                 'max:2048',
                 'dimensions:width=1024,height=1024',
-            ]
+            ],
         ];
     }
-    
+
     public function messages(): array
     {
         return [

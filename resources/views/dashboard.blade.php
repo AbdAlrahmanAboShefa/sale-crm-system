@@ -1,4 +1,5 @@
-<x-app-layout title="Dashboard">
+@extends('layouts.app')
+@section('content')
     <div class="space-y-6">
         <div class="flex justify-between items-center">
             <div>
@@ -424,4 +425,4 @@
         });
     </script>
     @endpush
-</x-app-layout>
+@endsection

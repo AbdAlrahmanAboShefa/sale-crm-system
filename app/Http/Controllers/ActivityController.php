@@ -15,6 +15,7 @@ class ActivityController extends Controller
     {
         $user = auth()->user();
         $isAdminOrManager = $user->hasRole(['Admin', 'Manager']);
+        $routePrefix = $this->getRoutePrefix();
 
         $query = Activity::with(['contact', 'deal', 'user']);
 
@@ -36,15 +37,16 @@ class ActivityController extends Controller
 
         $activities = $query->orderBy('due_date', 'desc')->orderBy('created_at', 'desc')->paginate(20);
 
-        return view('activities.index', compact('activities'));
+        return view('activities.index', compact('activities', 'routePrefix'));
     }
 
     public function create(): View
     {
+        $routePrefix = $this->getRoutePrefix();
         $contacts = \App\Models\Contact::all();
         $deals = \App\Models\Deal::where('stage', '!=', 'Lost')->where('stage', '!=', 'Won')->get();
 
-        return view('activities.create', compact('contacts', 'deals'));
+        return view('activities.create', compact('contacts', 'deals', 'routePrefix'));
     }
 
     public function store(ActivityRequest $request): RedirectResponse
@@ -55,7 +57,7 @@ class ActivityController extends Controller
 
         Activity::create($data);
 
-        return redirect()->route($this->getRoutePrefix() . '.activities.index')
+        return redirect()->route($this->getRoutePrefix().'.activities.index')
             ->with('success', 'Activity logged successfully.');
     }
 
@@ -69,11 +71,12 @@ class ActivityController extends Controller
     public function edit(Activity $activity): View
     {
         $this->authorizeActivity($activity);
+        $routePrefix = $this->getRoutePrefix();
 
         $contacts = \App\Models\Contact::all();
         $deals = \App\Models\Deal::where('stage', '!=', 'Lost')->where('stage', '!=', 'Won')->get();
 
-        return view('activities.edit', compact('activity', 'contacts', 'deals'));
+        return view('activities.edit', compact('activity', 'contacts', 'deals', 'routePrefix'));
     }
 
     public function update(ActivityRequest $request, Activity $activity): RedirectResponse
@@ -85,7 +88,7 @@ class ActivityController extends Controller
 
         $activity->update($data);
 
-        return redirect()->route($this->getRoutePrefix() . '.activities.show', $activity)
+        return redirect()->route($this->getRoutePrefix().'.activities.show', $activity)
             ->with('success', 'Activity updated successfully.');
     }
 
@@ -95,7 +98,7 @@ class ActivityController extends Controller
 
         $activity->delete();
 
-        return redirect()->route($this->getRoutePrefix() . '.activities.index')
+        return redirect()->route($this->getRoutePrefix().'.activities.index')
             ->with('success', 'Activity deleted successfully.');
     }
 
@@ -121,8 +124,13 @@ class ActivityController extends Controller
     private function getRoutePrefix(): string
     {
         $user = auth()->user();
-        if ($user->hasRole('Admin')) return 'admin';
-        if ($user->hasRole('Manager')) return 'manager';
+        if ($user->hasRole('Admin')) {
+            return 'admin';
+        }
+        if ($user->hasRole('Manager')) {
+            return 'manager';
+        }
+
         return 'agent';
     }
 }

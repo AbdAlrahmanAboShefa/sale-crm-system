@@ -6,7 +6,6 @@ use App\Models\Activity;
 use App\Notifications\ActivityReminderNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Notification;
 
 class SendActivityReminders implements ShouldQueue
 {

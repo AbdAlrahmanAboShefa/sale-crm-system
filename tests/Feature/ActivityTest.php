@@ -13,13 +13,15 @@ class ActivityTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $agent;
+
     private Contact $contact;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->admin = User::factory()->create();
         $this->admin->assignRole('Admin');
 

@@ -23,12 +23,12 @@ class ActivityReminderNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $contactName = $this->activity->contact->name ?? 'Unknown';
-        
+
         return (new MailMessage)
             ->subject("Reminder: {$this->activity->type} due tomorrow")
             ->line("This is a reminder that you have a {$this->activity->type} scheduled for tomorrow.")
             ->line("Contact: {$contactName}")
-            ->line("Note: " . substr($this->activity->note, 0, 100))
+            ->line('Note: '.substr($this->activity->note, 0, 100))
             ->action('View Activity', url('/'))
             ->line('Please complete or reschedule this activity.');
     }

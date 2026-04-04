@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Deal;
-use Illuminate\Database\Eloquent\Collection;
 
 class DealService
 {
@@ -17,11 +16,14 @@ class DealService
 
         $deals = $query->orderBy('updated_at', 'desc')->get();
 
-        $stages = Deal::STAGES;
         $kanban = [];
 
-        foreach ($stages as $stage) {
-            $kanban[$stage] = $deals->where('stage', $stage)->values();
+        foreach (Deal::STAGES as $stage) {
+            $stageDeals = $deals->where('stage', $stage)->values();
+            $kanban[$stage] = [
+                'deals' => $stageDeals,
+                'count' => $stageDeals->count(),
+            ];
         }
 
         return $kanban;

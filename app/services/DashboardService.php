@@ -153,15 +153,15 @@ class DashboardService
         }
 
         return $query->limit(5)->get()->map(function ($activity) {
-            $title = $activity->type . ' with ';
+            $title = $activity->type.' with ';
             if ($activity->contact) {
                 $title .= $activity->contact->name;
             } elseif ($activity->deal) {
                 $title .= $activity->deal->title;
             } else {
-                $title = $activity->type . ' activity';
+                $title = $activity->type.' activity';
             }
-            
+
             return [
                 'id' => $activity->id,
                 'type' => strtolower($activity->type),
@@ -184,7 +184,7 @@ class DashboardService
         }
 
         return $query->limit(5)->get()->map(function ($deal) {
-            $probability = match($deal->stage) {
+            $probability = match ($deal->stage) {
                 'Won' => 100,
                 'Negotiation' => 75,
                 'Proposal' => 50,
@@ -193,7 +193,7 @@ class DashboardService
                 'New' => 10,
                 default => 0,
             };
-            
+
             return [
                 'id' => $deal->id,
                 'name' => $deal->title,

@@ -1,9 +1,10 @@
-<x-app-layout title="Deal Details">
+@extends('layouts.app')
+@section('content')
     <div class="max-w-4xl mx-auto">
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-2xl font-bold text-gray-800">{{ $deal->title }}</h1>
             <div class="flex gap-2">
-                <a href="{{ route(Route::currentRouteNamed() . '.deals.index') }}" class="text-gray-600 hover:text-gray-800">
+                <a href="{{ route($routePrefix . '.deals.index') }}" class="text-gray-600 hover:text-gray-800">
                     ← Back
                 </a>
             </div>
@@ -48,10 +49,10 @@
                     </dl>
 
                     <div class="mt-4 pt-4 border-t flex gap-2">
-                        <a href="{{ route(Route::currentRouteNamed() . '.deals.edit', $deal) }}" class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <a href="{{ route($routePrefix . '.deals.edit', $deal) }}" class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                             Edit
                         </a>
-                        <form action="{{ route(Route::currentRouteNamed() . '.deals.destroy', $deal) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                        <form action="{{ route($routePrefix . '.deals.destroy', $deal) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                             @csrf @method('DELETE')
                             <button type="submit" class="px-3 py-1.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700">
                                 Delete
@@ -109,4 +110,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

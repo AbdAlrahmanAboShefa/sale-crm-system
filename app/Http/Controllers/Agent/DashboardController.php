@@ -14,7 +14,7 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $isAdminOrManager = false;
-        
+
         $stats = [
             'totalDeals' => Deal::where('user_id', $user->id)->count(),
             'totalContacts' => Contact::where('user_id', $user->id)->count(),
@@ -51,8 +51,8 @@ class DashboardController extends Controller
             ->keyBy('month');
 
         return view('agent.dashboard', compact(
-            'stats', 
-            'stageStats', 
+            'stats',
+            'stageStats',
             'recentActivities',
             'monthlyDeals',
             'isAdminOrManager'

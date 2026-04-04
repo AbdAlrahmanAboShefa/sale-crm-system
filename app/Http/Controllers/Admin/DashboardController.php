@@ -14,7 +14,7 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $isAdminOrManager = true;
-        
+
         $stats = [
             'totalDeals' => Deal::count(),
             'totalContacts' => Contact::count(),
@@ -48,8 +48,8 @@ class DashboardController extends Controller
             ->keyBy('month');
 
         return view('admin.dashboard', compact(
-            'stats', 
-            'stageStats', 
+            'stats',
+            'stageStats',
             'recentActivities',
             'monthlyDeals',
             'isAdminOrManager'

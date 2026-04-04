@@ -1,4 +1,5 @@
 <?php
+
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -12,8 +13,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->foreignIdfor(User::class , 'author_id')->constrained();
-         //   $table->foreign('author_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreignIdfor(User::class, 'author_id')->constrained();
+            //   $table->foreign('author_id')->references('id')->on('users')->cascadeOnDelete();
         });
     }
 

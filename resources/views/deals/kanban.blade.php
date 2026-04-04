@@ -1,20 +1,21 @@
-<x-app-layout title="Deals Kanban">
+@extends('layouts.app')
+@section('content')
     <div class="mb-6 flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Deals Pipeline</h1>
             <p class="text-sm text-gray-500 mt-1">Total Forecast: <span class="font-semibold text-green-600">{{ $forecast['currency'] }} {{ number_format($forecast['total'], 0) }}</span></p>
         </div>
         <div class="flex gap-3">
-            <a href="{{ route(Route::currentRouteNamed() . '.deals.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+            <a href="{{ route($routePrefix . '.deals.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                 List View
             </a>
-            <a href="{{ route(Route::currentRouteNamed() . '.deals.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <a href="{{ route($routePrefix . '.deals.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 + New Deal
             </a>
         </div>
     </div>
 
-    <div class="flex gap-4 overflow-x-auto pb-4" x-data="kanbanApp()">
+    <div class="flex gap-4 pb-4" style="overflow-x: auto; margin: -1.5rem; padding: 1.5rem;" x-data="kanbanApp()">
         @foreach(['New', 'Contacted', 'Qualified', 'Proposal', 'Negotiation', 'Won', 'Lost'] as $stage)
         <div class="flex-shrink-0 w-72">
             <div class="bg-gray-100 rounded-lg p-3">
@@ -31,7 +32,7 @@
                          data-deal-id="{{ $deal->id }}"
                          data-stage="{{ $stage }}">
                         <div class="flex items-start justify-between mb-2">
-                            <a href="{{ route(Route::currentRouteNamed() . '.deals.show', $deal) }}" class="text-sm font-medium text-gray-800 hover:text-blue-600">
+                            <a href="{{ route($routePrefix.'.deals.show', $deal) }}" class="text-sm font-medium text-gray-800 hover:text-blue-600">
                                 {{ $deal->title }}
                             </a>
                         </div>
@@ -77,6 +78,7 @@
                             group: 'deals',
                             animation: 150,
                             ghostClass: 'opacity-50',
+                            draggable: '.deal-card',
                             onEnd: (evt) => {
                                 const dealId = evt.item.dataset.dealId;
                                 const newStage = evt.to.dataset.stage;
@@ -89,8 +91,8 @@
                     });
                 },
                 updateDealStage(dealId, stage) {
-                    fetch(`/deals/${dealId}/stage`, {
-                        method: 'PUT',
+                    fetch(`/{{ $routePrefix }}/deals/${dealId}/stage`, {
+                        method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -113,4 +115,4 @@
         }
     </script>
     @endpush
-</x-app-layout>
+@endsection

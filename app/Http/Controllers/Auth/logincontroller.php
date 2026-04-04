@@ -21,16 +21,17 @@ class LoginController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
-        $user = $request->user();
+        $user = Auth::user();
+        $role = $user->getRoleNames()->first() ?? 'Agent';
 
-        $redirectRoute = match (true) {
-            $user->hasRole('Admin') => 'admin.dashboard',
-            $user->hasRole('Manager') => 'manager.dashboard',
-            $user->hasRole('Agent') => 'agent.dashboard',
-            default => 'login',
+        $redirectRoute = match ($role) {
+            'Admin' => 'admin.dashboard',
+            'Manager' => 'manager.dashboard',
+            'Agent' => 'agent.dashboard',
+            default => 'agent.dashboard',
         };
 
-        return redirect()->intended(route($redirectRoute));
+        return redirect()->route($redirectRoute);
     }
 
     public function destroy(Request $request): RedirectResponse

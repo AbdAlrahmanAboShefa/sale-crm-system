@@ -25,16 +25,17 @@ class StorePostRequest extends FormRequest
             'title' => 'required|string|min:2',
             'body' => 'required|string',
         ];
-        
+
     }
+
     public function messages()
-        {
-            return [
-                'title.required' => 'The title field is required.',
-                'title.string' => 'The title must be a string.',
-                'title.min' => 'The title may not be less than :min characters.',
-                'body.required' => 'The body field is required.',
-                'body.string' => 'The body must be a string.',
-            ];
-        }
+    {
+        return [
+            'title.required' => 'The title field is required.',
+            'title.string' => 'The title must be a string.',
+            'title.min' => 'The title may not be less than :min characters.',
+            'body.required' => 'The body field is required.',
+            'body.string' => 'The body must be a string.',
+        ];
+    }
 }

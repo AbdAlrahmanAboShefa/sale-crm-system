@@ -4,15 +4,17 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Spatie\Permission\Exceptions\UnauthorizedException;
-use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string $role): mixed
     {
-        if (! $request->user() || ! $request->user()->hasRole($role)) {
-            throw UnauthorizedException::forRoles([$role]);
+        if (! auth()->check()) {
+            return redirect()->route('login');
+        }
+
+        if (! auth()->user()->hasRole($role)) {
+            abort(403, 'Unauthorized');
         }
 
         return $next($request);
