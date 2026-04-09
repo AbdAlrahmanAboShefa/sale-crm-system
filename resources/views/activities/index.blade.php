@@ -11,7 +11,7 @@
                     <i class="fas fa-filter text-gray-400"></i>
                     <form method="GET" class="flex items-center gap-2 flex-wrap">
                         <select name="type" onchange="this.form.submit()" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
-                            <option value="">{{ __('messages.common.all') }} {{ __('messages.activities.types') }}</option>
+                            <option value="">{{ __('messages.common.all') }} {{ __('messages.activities.type') }}</option>
                             @foreach(['Call', 'Meeting', 'Email', 'Task', 'Demo'] as $type)
                             <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>{{ $type }}</option>
                             @endforeach
