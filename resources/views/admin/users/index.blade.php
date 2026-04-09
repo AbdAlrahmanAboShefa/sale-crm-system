@@ -2,14 +2,14 @@
 @section('content')
     @if(session('success'))
     <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg flex items-center">
-        <i class="fas fa-check-circle mr-2"></i>
+        <i class="fas fa-check-circle {{ app()->getLocale() === 'ar' ? 'ms-2 me-0' : 'me-2' }}"></i>
         {{ session('success') }}
     </div>
     @endif
 
     @if(session('error'))
     <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center">
-        <i class="fas fa-exclamation-circle mr-2"></i>
+        <i class="fas fa-exclamation-circle {{ app()->getLocale() === 'ar' ? 'ms-2 me-0' : 'me-2' }}"></i>
         {{ session('error') }}
     </div>
     @endif
@@ -20,14 +20,14 @@
                 <div class="flex-1 max-w-md">
                     <form method="GET" action="{{ route('admin.users.index') }}" class="relative">
                         <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email..."
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('messages.common.search_placeholder') }}"
                             class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </form>
                 </div>
                 <div class="flex items-center gap-3">
                     <a href="{{ route('admin.users.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 shadow-sm transition-colors">
-                        <i class="fas fa-plus mr-2"></i>
-                        New User
+                        <i class="fas fa-plus {{ app()->getLocale() === 'ar' ? 'ms-2 me-0' : 'me-2' }}"></i>
+                        {{ __('messages.users.new_user') }}
                     </a>
                 </div>
             </div>
@@ -37,12 +37,12 @@
             <table class="w-full">
                 <thead>
                     <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
-                        <th class="px-6 py-4">User</th>
-                        <th class="px-6 py-4">Email</th>
-                        <th class="px-6 py-4">Role</th>
-                        <th class="px-6 py-4">Status</th>
-                        <th class="px-6 py-4">Created</th>
-                        <th class="px-6 py-4">Actions</th>
+                        <th class="px-6 py-4">{{ __('messages.users.user') ?? 'User' }}</th>
+                        <th class="px-6 py-4">{{ __('messages.users.email') }}</th>
+                        <th class="px-6 py-4">{{ __('messages.users.role') }}</th>
+                        <th class="px-6 py-4">{{ __('messages.common.status') }}</th>
+                        <th class="px-6 py-4">{{ __('messages.common.created_at') }}</th>
+                        <th class="px-6 py-4">{{ __('messages.common.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -66,24 +66,24 @@
                             ];
                             @endphp
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $roleColors[$user->roles->first()?->name] ?? 'bg-gray-100 text-gray-700' }}">
-                                {{ $user->roles->first()?->name ?? 'No Role' }}
+                                {{ $user->roles->first()?->name ?? __('messages.users.no_role') ?? 'No Role' }}
                             </span>
                         </td>
                         <td class="px-6 py-4">
                             @if($user->is_active)
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
-                                Active
+                                {{ __('messages.common.active') }}
                             </span>
                             @else
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                                Inactive
+                                {{ __('messages.common.inactive') }}
                             </span>
                             @endif
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $user->created_at->format('M j, Y') }}</td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-2">
-                                <a href="{{ route('admin.users.edit', $user) }}" class="p-2 text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Edit">
+                                <a href="{{ route('admin.users.edit', $user) }}" class="p-2 text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="{{ __('messages.common.edit') }}">
                                     <i class="fas fa-pencil"></i>
                                 </a>
                                 @if(auth()->id() !== $user->id)
@@ -91,18 +91,18 @@
                                     <form action="{{ route('admin.users.destroy', $user) }}" method="POST" x-data="{ showModal: false }" class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="button" @click="showModal = true" class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Deactivate">
+                                        <button type="button" @click="showModal = true" class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="{{ __('messages.users.deactivate') }}">
                                             <i class="fas fa-ban"></i>
                                         </button>
                                         <div x-show="showModal" x-transition class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
                                             <div class="flex items-center justify-center min-h-screen px-4">
                                                 <div class="fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity" @click="showModal = false"></div>
                                                 <div class="relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 z-10">
-                                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Deactivate User</h3>
-                                                    <p class="text-gray-600 mb-6">Are you sure you want to deactivate <strong>{{ $user->name }}</strong>? They will no longer be able to log in.</p>
+                                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ __('messages.users.deactivate') }}</h3>
+                                                    <p class="text-gray-600 mb-6">{{ __('messages.users.deactivate_warning', ['name' => $user->name]) ?? "Are you sure you want to deactivate {$user->name}? They will no longer be able to log in." }}</p>
                                                     <div class="flex justify-end gap-3">
-                                                        <button type="button" @click="showModal = false" class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">Cancel</button>
-                                                        <button type="submit" class="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg">Deactivate</button>
+                                                        <button type="button" @click="showModal = false" class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">{{ __('messages.common.cancel') }}</button>
+                                                        <button type="submit" class="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg">{{ __('messages.users.deactivate') }}</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -111,13 +111,13 @@
                                     @else
                                     <form action="{{ route('admin.users.activate', $user) }}" method="POST" class="inline">
                                         @csrf
-                                        <button type="submit" class="p-2 text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Activate">
+                                        <button type="submit" class="p-2 text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="{{ __('messages.users.activate') }}">
                                             <i class="fas fa-check"></i>
                                         </button>
                                     </form>
                                     @endif
                                 @else
-                                <span class="p-2 text-gray-300 cursor-not-allowed" title="Cannot deactivate yourself">
+                                <span class="p-2 text-gray-300 cursor-not-allowed" title="{{ __('messages.users.cannot_deactivate_self') ?? 'Cannot deactivate yourself' }}">
                                     <i class="fas fa-ban"></i>
                                 </span>
                                 @endif
@@ -129,11 +129,11 @@
                         <td colspan="6" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center">
                                 <i class="fas fa-user-shield text-gray-300 text-5xl mb-4"></i>
-                                <h3 class="text-lg font-medium text-gray-900 mb-1">No users found</h3>
-                                <p class="text-gray-500 mb-4">Get started by creating your first user.</p>
+                                <h3 class="text-lg font-medium text-gray-900 mb-1">{{ __('messages.users.no_users') }}</h3>
+                                <p class="text-gray-500 mb-4">{{ __('messages.users.get_started') }}</p>
                                 <a href="{{ route('admin.users.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700">
-                                    <i class="fas fa-plus mr-2"></i>
-                                    New User
+                                    <i class="fas fa-plus {{ app()->getLocale() === 'ar' ? 'ms-2 me-0' : 'me-2' }}"></i>
+                                    {{ __('messages.users.new_user') }}
                                 </a>
                             </div>
                         </td>

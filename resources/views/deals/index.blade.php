@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
     @if(session('success'))
-    <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg flex items-center"><i class="fas fa-check-circle mr-2"></i>{{ session('success') }}</div>
+    <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg flex items-center"><i class="fas fa-check-circle {{ app()->getLocale() === 'ar' ? 'ms-2 me-0' : 'me-2' }}"></i>{{ session('success') }}</div>
     @endif
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100">
@@ -9,19 +9,19 @@
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div class="flex items-center gap-2 flex-wrap">
                     <form method="GET" action="{{ route($routePrefix . '.deals.index') }}" class="relative">
-                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search deals..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <i class="fas fa-search absolute {{ app()->getLocale() === 'ar' ? 'right-3' : 'left-3' }} top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('messages.common.search') }}" class="w-64 {{ app()->getLocale() === 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4' }} py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </form>
                     <form method="GET" action="{{ route($routePrefix . '.deals.index') }}">
                         <select name="stage" onchange="this.form.submit()" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
-                            <option value="">All Stages</option>
+                            <option value="">{{ __('messages.common.all') }} {{ __('messages.deals.stage') }}</option>
                             @foreach(['New', 'Contacted', 'Qualified', 'Proposal', 'Negotiation', 'Won', 'Lost'] as $stage)
-                            <option value="{{ $stage }}" {{ request('stage') == $stage ? 'selected' : '' }}>{{ $stage }}</option>
+                            <option value="{{ $stage }}" {{ request('stage') == $stage ? 'selected' : '' }}>{{ __("messages.deals.stages." . strtolower($stage)) }}</option>
                             @endforeach
                         </select>
                         @if(auth()->user()->hasRole(['Admin', 'Manager']))
                         <select name="user_id" onchange="this.form.submit()" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
-                            <option value="">All Agents</option>
+                            <option value="">{{ __('messages.common.all') }}</option>
                             @foreach($users as $u)
                             <option value="{{ $u->id }}" {{ request('user_id') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
                             @endforeach
@@ -31,10 +31,10 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <a href="{{ route($routePrefix . '.deals.kanban') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-columns mr-2"></i>Kanban View
+                        <i class="fas fa-columns {{ app()->getLocale() === 'ar' ? 'ms-2 me-0' : 'me-2' }}"></i>{{ __('messages.deals.kanban_board') }}
                     </a>
                     <a href="{{ route($routePrefix . '.deals.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 shadow-sm transition-colors">
-                        <i class="fas fa-plus mr-2"></i>New Deal
+                        <i class="fas fa-plus {{ app()->getLocale() === 'ar' ? 'ms-2 me-0' : 'me-2' }}"></i>{{ __('messages.deals.new_deal') }}
                     </a>
                 </div>
             </div>
@@ -43,16 +43,16 @@
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
-                    <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
-                        <th class="px-6 py-4">Title</th>
-                        <th class="px-6 py-4">Contact</th>
-                        <th class="px-6 py-4">Value</th>
-                        <th class="px-6 py-4">Stage</th>
-                        <th class="px-6 py-4">Prob.</th>
-                        <th class="px-6 py-4">Expected Close</th>
-                        <th class="px-6 py-4">Owner</th>
-                        <th class="px-6 py-4">Days</th>
-                        <th class="px-6 py-4">Actions</th>
+                    <tr class="text-{{ app()->getLocale() === 'ar' ? 'right' : 'left' }} text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                        <th class="px-6 py-4">{{ __('messages.deals.deal_title') }}</th>
+                        <th class="px-6 py-4">{{ __('messages.deals.contact') }}</th>
+                        <th class="px-6 py-4">{{ __('messages.deals.value') }}</th>
+                        <th class="px-6 py-4">{{ __('messages.deals.stage') }}</th>
+                        <th class="px-6 py-4">{{ __('messages.deals.probability') ?? 'Prob.' }}</th>
+                        <th class="px-6 py-4">{{ __('messages.deals.close_date') }}</th>
+                        <th class="px-6 py-4">{{ __('messages.deals.assigned_to') }}</th>
+                        <th class="px-6 py-4">{{ __('messages.common.days') ?? 'Days' }}</th>
+                        <th class="px-6 py-4">{{ __('messages.common.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -74,7 +74,7 @@
                             $stageColors = ['New' => 'bg-gray-100 text-gray-700', 'Contacted' => 'bg-blue-100 text-blue-700', 'Qualified' => 'bg-cyan-100 text-cyan-700', 'Proposal' => 'bg-yellow-100 text-yellow-700', 'Negotiation' => 'bg-orange-100 text-orange-700', 'Won' => 'bg-emerald-100 text-emerald-700', 'Lost' => 'bg-red-100 text-red-700'];
                             @endphp
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $stageColors[$deal->stage] ?? 'bg-gray-100 text-gray-700' }}">
-                                {{ $deal->stage }}
+                                {{ __("messages.deals.stages." . strtolower($deal->stage)) }}
                             </span>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600">{{ $deal->probability }}%</td>
@@ -94,20 +94,20 @@
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-2">
-                                <a href="{{ route($routePrefix . '.deals.show', $deal) }}" class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View"><i class="fas fa-eye"></i></a>
-                                <a href="{{ route($routePrefix . '.deals.edit', $deal) }}" class="p-2 text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Edit"><i class="fas fa-pencil"></i></a>
+                                <a href="{{ route($routePrefix . '.deals.show', $deal) }}" class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="{{ __('messages.common.view') }}"><i class="fas fa-eye"></i></a>
+                                <a href="{{ route($routePrefix . '.deals.edit', $deal) }}" class="p-2 text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="{{ __('messages.common.edit') }}"><i class="fas fa-pencil"></i></a>
                                 <form action="{{ route($routePrefix . '.deals.destroy', $deal) }}" method="POST" x-data="{ showModal: false }" class="inline">
                                     @csrf @method('DELETE')
-                                    <button type="button" @click="showModal = true" class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete"><i class="fas fa-trash"></i></button>
+                                    <button type="button" @click="showModal = true" class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="{{ __('messages.common.delete') }}"><i class="fas fa-trash"></i></button>
                                     <div x-show="showModal" x-transition class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
                                         <div class="flex items-center justify-center min-h-screen px-4">
                                             <div class="fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity" @click="showModal = false"></div>
                                             <div class="relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 z-10">
-                                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Delete Deal</h3>
-                                                <p class="text-gray-600 mb-6">Are you sure you want to delete <strong>{{ $deal->title }}</strong>?</p>
+                                                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ __('messages.common.confirm_delete') }}</h3>
+                                                <p class="text-gray-600 mb-6">{{ __('messages.common.delete_warning') }}</p>
                                                 <div class="flex justify-end gap-3">
-                                                    <button type="button" @click="showModal = false" class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">Cancel</button>
-                                                    <button type="submit" class="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg">Delete</button>
+                                                    <button type="button" @click="showModal = false" class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">{{ __('messages.common.cancel') }}</button>
+                                                    <button type="submit" class="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg">{{ __('messages.common.delete') }}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -121,9 +121,9 @@
                         <td colspan="9" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center">
                                 <i class="fas fa-hand-holding-dollar text-gray-300 text-5xl mb-4"></i>
-                                <h3 class="text-lg font-medium text-gray-900 mb-1">No deals found</h3>
-                                <p class="text-gray-500 mb-4">Get started by creating your first deal.</p>
-                                <a href="{{ route($routePrefix . '.deals.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700"><i class="fas fa-plus mr-2"></i>New Deal</a>
+                                <h3 class="text-lg font-medium text-gray-900 mb-1">{{ __('messages.deals.no_deals') ?? __('messages.common.no_data') }}</h3>
+                                <p class="text-gray-500 mb-4">{{ __('messages.deals.get_started') ?? __('messages.contacts.get_started') }}</p>
+                                <a href="{{ route($routePrefix . '.deals.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700"><i class="fas fa-plus {{ app()->getLocale() === 'ar' ? 'ms-2 me-0' : 'me-2' }}"></i>{{ __('messages.deals.new_deal') }}</a>
                             </div>
                         </td>
                     </tr>
