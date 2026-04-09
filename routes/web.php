@@ -33,7 +33,9 @@ Route::middleware(['set.locale', 'guest'])->group(function () {
     Route::post('/login', [LoginController::class, 'store'])->name('login');
 });
 
-Route::get('/language/{locale}', [LanguageController::class, 'switch'])->name('language.switch');
+Route::get('/language/{locale}', [LanguageController::class, 'switch'])
+    ->middleware(['set.locale', 'auth'])
+    ->name('language.switch');
 
 Route::middleware(['set.locale', 'auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

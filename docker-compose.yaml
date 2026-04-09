@@ -20,7 +20,7 @@ services:
       - DB_PORT=3306
       - DB_DATABASE=test-db
       - DB_USERNAME=laravel
-      - DB_PASSWORD=secret
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
     networks:
       - application
     entrypoint: ['/bin/sh', '-c']
@@ -36,15 +36,15 @@ services:
     volumes:
       - ./data:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root}
       - MYSQL_USER=laravel
-      - MYSQL_PASSWORD=secret
+      - MYSQL_PASSWORD=${DB_PASSWORD:-secret}
       - MYSQL_DATABASE=test-db
     networks:
       - application
     container_name: mymysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u laravel -psecret || exit 1"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u laravel -p${DB_PASSWORD:-secret} || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 5

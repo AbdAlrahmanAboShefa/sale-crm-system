@@ -47,7 +47,7 @@
                         <div>
                             <p class="text-xs text-gray-500">{{ __('messages.common.website') }}</p>
                             @if($contact->website)
-                            <a href="{{ $contact->website }}" target="_blank" class="text-sm text-blue-600 hover:underline">{{ Str::limit($contact->website, 25) }}</a>
+                            <a href="{{ $contact->website }}" target="_blank" rel="noopener noreferrer" class="text-sm text-blue-600 hover:underline">{{ Str::limit($contact->website, 25) }}</a>
                             @else
                             <p class="text-sm text-gray-400">-</p>
                             @endif

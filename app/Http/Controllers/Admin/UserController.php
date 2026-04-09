@@ -11,13 +11,6 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    public function __construct()
-    {
-        if (! auth()->user()->hasRole('Admin')) {
-            abort(403, 'Unauthorized action.');
-        }
-    }
-
     public function index(Request $request): View
     {
         $users = User::with('roles')
