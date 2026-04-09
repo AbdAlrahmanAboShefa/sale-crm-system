@@ -28,7 +28,7 @@ Route::middleware('set.locale')->group(function () {
     });
 });
 
-Route::middleware(['set.locale', 'guest', 'throttle:5,1'])->group(function () {
+Route::middleware(['set.locale', 'guest'])->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store'])->name('login');
 });
