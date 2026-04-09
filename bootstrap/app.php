@@ -22,18 +22,22 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (ThrottleRequestsException $e, Request $request) {
+            $seconds = $e->getHeaders()['Retry-After'] ?? 60;
+            $message = __('auth.throttle', [
+                'seconds' => $seconds,
+                'minutes' => ceil($seconds / 60),
+            ]);
+
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => __('auth.throttle', [
-                        'seconds' => $e->getHeaders()['Retry-After'] ?? 60,
-                        'minutes' => ceil(($e->getHeaders()['Retry-After'] ?? 60) / 60),
-                    ]),
+                    'message' => $message,
                 ], 429);
             }
 
-            return back()->with('error', __('auth.throttle', [
-                'seconds' => $e->getHeaders()['Retry-After'] ?? 60,
-                'minutes' => ceil(($e->getHeaders()['Retry-After'] ?? 60) / 60),
-            ]))->withInput();
+            if ($request->routeIs('login')) {
+                return redirect()->route('login')->withErrors(['email' => $message])->withInput();
+            }
+
+            return back()->with('error', $message)->withInput();
         });
     })->create();
