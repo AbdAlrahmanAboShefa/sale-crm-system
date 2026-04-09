@@ -48,10 +48,10 @@
                         <th class="px-6 py-4">{{ __('messages.deals.contact') }}</th>
                         <th class="px-6 py-4">{{ __('messages.deals.value') }}</th>
                         <th class="px-6 py-4">{{ __('messages.deals.stage') }}</th>
-                        <th class="px-6 py-4">{{ __('messages.deals.probability') ?? 'Prob.' }}</th>
+                        <th class="px-6 py-4">{{ __('messages.deals.probability') }}</th>
                         <th class="px-6 py-4">{{ __('messages.deals.close_date') }}</th>
                         <th class="px-6 py-4">{{ __('messages.deals.assigned_to') }}</th>
-                        <th class="px-6 py-4">{{ __('messages.common.days') ?? 'Days' }}</th>
+                        <th class="px-6 py-4">{{ __('messages.common.days') }}</th>
                         <th class="px-6 py-4">{{ __('messages.common.actions') }}</th>
                     </tr>
                 </thead>
