@@ -195,6 +195,7 @@ return [
         'title' => 'Users',
         'all_users' => 'All Users',
         'new_user' => 'New User',
+        'create_description' => 'Add a new user to the system',
         'edit_user' => 'Edit User',
         'user_details' => 'User Details',
         'name' => 'Name',
