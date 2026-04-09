@@ -3,7 +3,7 @@
 @section('content')
 <div class="space-y-6">
     <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
+        <h1 class="text-2xl font-bold text-gray-800">{{ __('messages.nav.dashboard') }}</h1>
         <p class="text-sm text-gray-500">{{ now()->format('l, F j, Y') }}</p>
     </div>
 
@@ -11,7 +11,7 @@
         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-500 mb-1">Total Deals</p>
+                    <p class="text-sm text-gray-500 mb-1">{{ __('messages.deals.all_deals') }}</p>
                     <p class="text-2xl font-bold text-gray-800">{{ $stats['totalDeals'] }}</p>
                 </div>
                 <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -23,7 +23,7 @@
         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-500 mb-1">Active Deals</p>
+                    <p class="text-sm text-gray-500 mb-1">{{ __('messages.common.active') }} {{ __('messages.deals.title') }}</p>
                     <p class="text-2xl font-bold text-gray-800">{{ $stats['activeDeals'] }}</p>
                 </div>
                 <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
@@ -35,7 +35,7 @@
         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-500 mb-1">Total Pipeline Value</p>
+                    <p class="text-sm text-gray-500 mb-1">{{ __('messages.deals.pipeline_value') }}</p>
                     <p class="text-2xl font-bold text-gray-800">${{ number_format($stats['totalValue'], 0) }}</p>
                 </div>
                 <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -47,7 +47,7 @@
         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-500 mb-1">Won Deals</p>
+                    <p class="text-sm text-gray-500 mb-1">{{ __('messages.deals.stages.won') }} {{ __('messages.deals.title') }}</p>
                     <p class="text-2xl font-bold text-gray-800">{{ $stats['wonDeals'] }}</p>
                 </div>
                 <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -59,7 +59,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Pipeline Overview</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __('messages.deals.pipeline_value') }}</h3>
             <div class="space-y-4">
                 @foreach(['New', 'Contacted', 'Qualified', 'Proposal', 'Negotiation', 'Won'] as $stage)
                 @php
@@ -77,8 +77,8 @@
                 @endphp
                 <div>
                     <div class="flex items-center justify-between mb-1">
-                        <span class="text-sm font-medium text-gray-700">{{ $stage }}</span>
-                        <span class="text-sm text-gray-500">{{ $stageData['count'] }} deals • ${{ number_format($stageData['value'], 0) }}</span>
+                        <span class="text-sm font-medium text-gray-700">{{ __("messages.deals.stages." . strtolower($stage)) }}</span>
+                        <span class="text-sm text-gray-500">{{ $stageData['count'] }} {{ __('messages.deals.title') }} • ${{ number_format($stageData['value'], 0) }}</span>
                     </div>
                     <div class="w-full bg-gray-100 rounded-full h-3">
                         <div class="{{ $colors[$stage] }} h-3 rounded-full transition-all duration-500" style="width: {{ $percentage }}%"></div>
@@ -89,7 +89,7 @@
         </div>
 
         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Deal Stages Distribution</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __('messages.dashboard.deals_by_stage') }}</h3>
             <div class="flex items-center justify-center">
                 <div class="relative">
                     <canvas id="stageChart" width="200" height="200"></canvas>
@@ -110,7 +110,7 @@
                 @endphp
                 <div class="flex items-center gap-2">
                     <div class="w-3 h-3 rounded-full {{ $colors[$stage] }}"></div>
-                    <span class="text-xs text-gray-600">{{ $stage }}: {{ $stageStats[$stage]['count'] ?? 0 }}</span>
+                    <span class="text-xs text-gray-600">{{ __("messages.deals.stages." . strtolower($stage)) }}: {{ $stageStats[$stage]['count'] ?? 0 }}</span>
                 </div>
                 @endforeach
             </div>
@@ -120,8 +120,8 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Recent Activities</h3>
-                <a href="{{ route('admin.activities.index') }}" class="text-sm text-blue-600 hover:text-blue-700">View All</a>
+                <h3 class="text-lg font-semibold text-gray-800">{{ __('messages.dashboard.recent_activities') }}</h3>
+                <a href="{{ route('admin.activities.index') }}" class="text-sm text-blue-600 hover:text-blue-700">{{ __('messages.common.view') }} {{ __('messages.common.all') }}</a>
             </div>
             <div class="space-y-4">
                 @forelse($recentActivities as $activity)
@@ -141,16 +141,16 @@
                             @elseif($activity->deal)
                                 {{ $activity->deal->title }}
                             @else
-                                {{ $activity->type }}
+                                {{ __("messages.activities.types." . strtolower($activity->type)) }}
                             @endif
                         </p>
-                        <p class="text-xs text-gray-500 truncate">{{ $activity->note ?: 'No notes' }}</p>
+                        <p class="text-xs text-gray-500 truncate">{{ $activity->note ?: __('messages.activities.note') }}</p>
                         <p class="text-xs text-gray-400 mt-1">
                             {{ $activity->created_at->diffForHumans() }}
                             @if($activity->is_done)
-                                <span class="text-green-600 ml-2"><i class="fas fa-check-circle"></i> Done</span>
+                                <span class="text-green-600 {{ app()->getLocale() === 'ar' ? 'me-2' : 'ms-2' }}"><i class="fas fa-check-circle"></i> {{ __('messages.activities.completed') }}</span>
                             @elseif($activity->isOverdue())
-                                <span class="text-red-600 ml-2"><i class="fas fa-exclamation-circle"></i> Overdue</span>
+                                <span class="text-red-600 {{ app()->getLocale() === 'ar' ? 'me-2' : 'ms-2' }}"><i class="fas fa-exclamation-circle"></i> {{ __('messages.activities.pending') }}</span>
                             @endif
                         </p>
                     </div>
@@ -158,7 +158,7 @@
                 @empty
                 <div class="text-center py-8 text-gray-400">
                     <i class="fas fa-inbox text-3xl mb-2"></i>
-                    <p class="text-sm">No recent activities</p>
+                    <p class="text-sm">{{ __('messages.common.no_data') }}</p>
                 </div>
                 @endforelse
             </div>
@@ -166,7 +166,7 @@
 
         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Monthly Performance</h3>
+                <h3 class="text-lg font-semibold text-gray-800">{{ __('messages.dashboard.my_performance') }}</h3>
             </div>
             <div class="h-64 flex items-end justify-around gap-2">
                 @for($i = 1; $i <= 12; $i++)
@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
         new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: {!! json_encode(array_keys($stageStats)) !!},
+                labels: {!! json_encode(array_map(fn($key) => __("messages.deals.stages." . strtolower($key)), array_keys($stageStats))) !!},
                 datasets: [{
                     data: {!! json_encode(array_column($stageStats, 'count')) !!},
                     backgroundColor: [

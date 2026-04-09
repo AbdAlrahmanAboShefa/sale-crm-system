@@ -21,7 +21,7 @@ class ContactRequest extends FormRequest
             'website' => ['nullable', 'url', 'max:255'],
             'source' => ['required', 'in:website,referral,social,cold'],
             'status' => ['required', 'in:Lead,Prospect,Client,Lost,Inactive'],
-            'tags' => ['nullable', 'array'],
+            'tags' => ['nullable', 'string'],
             'tags.*' => ['string', 'max:50'],
             'custom_fields' => ['nullable', 'array'],
         ];
