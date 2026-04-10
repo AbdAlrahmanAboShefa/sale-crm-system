@@ -25,7 +25,18 @@ class User extends Authenticatable
         'email',
         'password',
         'is_active',
+        'tenant_id',
     ];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('tenant', function ($query) {
+            $user = auth()->user();
+            if ($user && ! $user->hasRole('Super Admin') && $user->tenant_id) {
+                $query->where('tenant_id', $user->tenant_id);
+            }
+        });
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -58,5 +69,10 @@ class User extends Authenticatable
     public function imageGenerations(): HasMany
     {
         return $this->hasMany(ImageGeneration::class);
+    }
+
+    public function tenant(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
     }
 }

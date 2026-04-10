@@ -11,9 +11,20 @@ class Deal extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected static function booted(): void
+    {
+        static::addGlobalScope('tenant', function ($query) {
+            $tenantId = auth()->user()?->tenant_id;
+            if ($tenantId) {
+                $query->where('tenant_id', $tenantId);
+            }
+        });
+    }
+
     protected $fillable = [
         'contact_id',
         'user_id',
+        'tenant_id',
         'title',
         'value',
         'currency',

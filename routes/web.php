@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DealController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SuperAdmin\TenantController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -15,7 +16,9 @@ Route::middleware('set.locale')->group(function () {
     Route::get('/', function () {
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->hasRole('Admin')) {
+            if ($user->hasRole('Super Admin')) {
+                return redirect()->route('super_admin.dashboard');
+            } elseif ($user->hasRole('Admin')) {
                 return redirect()->route('admin.dashboard');
             } elseif ($user->hasRole('Manager')) {
                 return redirect()->route('manager.dashboard');
@@ -76,4 +79,8 @@ Route::middleware(['set.locale', 'auth', 'role:Agent'])->prefix('agent')->name('
 Route::middleware(['set.locale', 'auth'])->group(function () {
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+});
+
+Route::middleware(['set.locale', 'auth', 'role:Super Admin'])->prefix('super_admin')->name('super_admin.')->group(function () {
+    Route::resource('tenants', TenantController::class)->names('tenants');
 });

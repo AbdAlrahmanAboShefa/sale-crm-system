@@ -10,10 +10,21 @@ class Activity extends Model
 {
     use HasFactory;
 
+    protected static function booted(): void
+    {
+        static::addGlobalScope('tenant', function ($query) {
+            $tenantId = auth()->user()?->tenant_id;
+            if ($tenantId) {
+                $query->where('tenant_id', $tenantId);
+            }
+        });
+    }
+
     protected $fillable = [
         'deal_id',
         'contact_id',
         'user_id',
+        'tenant_id',
         'type',
         'note',
         'outcome',

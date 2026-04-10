@@ -25,6 +25,7 @@ class LoginController extends Controller
         $role = $user->getRoleNames()->first() ?? 'Agent';
 
         $redirectRoute = match ($role) {
+            'Super Admin' => 'super_admin.tenants.index',
             'Admin' => 'admin.dashboard',
             'Manager' => 'manager.dashboard',
             'Agent' => 'agent.dashboard',
