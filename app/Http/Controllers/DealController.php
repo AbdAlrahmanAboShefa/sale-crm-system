@@ -28,7 +28,7 @@ class DealController extends Controller
             $user->id
         );
 
-        $users = \App\Models\User::all();
+        $users = \App\Models\User::where('tenant_id', auth()->user()->tenant_id)->get();
 
         return view('deals.index', compact('deals', 'users', 'routePrefix'));
     }
@@ -41,7 +41,7 @@ class DealController extends Controller
 
         $kanban = $this->dealService->getKanbanData($isAdminOrManager, $user->id);
         $forecast = ['total' => $this->dealService->getForecastValue($isAdminOrManager, $user->id), 'currency' => 'USD'];
-        $users = $isAdminOrManager ? \App\Models\User::all() : collect();
+        $users = $isAdminOrManager ? \App\Models\User::where('tenant_id', auth()->user()->tenant_id)->get() : collect();
 
         return view('deals.kanban', compact('kanban', 'forecast', 'users', 'isAdminOrManager', 'routePrefix'));
     }
@@ -52,15 +52,18 @@ class DealController extends Controller
         $isAdminOrManager = $user->hasRole(['Admin', 'Manager']);
         $routePrefix = $this->getRoutePrefix();
 
-        $contacts = \App\Models\Contact::all();
-        $users = $isAdminOrManager ? \App\Models\User::all() : collect([$user]);
+        $contacts = \App\Models\Contact::forTenant()->get();
+        $users = $isAdminOrManager ? \App\Models\User::where('tenant_id', auth()->user()->tenant_id)->get() : collect([$user]);
 
         return view('deals.create', compact('contacts', 'users', 'routePrefix'));
     }
 
     public function store(DealRequest $request): RedirectResponse
     {
-        Deal::create($request->validated());
+        $data = $request->validated();
+        $data['tenant_id'] = auth()->user()->tenant_id;
+
+        Deal::create($data);
 
         return redirect()->route($this->getRoutePrefix().'.deals.index')
             ->with('success', 'Deal created successfully.');
@@ -82,8 +85,8 @@ class DealController extends Controller
         $user = auth()->user();
         $isAdminOrManager = $user->hasRole(['Admin', 'Manager']);
 
-        $contacts = \App\Models\Contact::all();
-        $users = $isAdminOrManager ? \App\Models\User::all() : collect([$user]);
+        $contacts = \App\Models\Contact::forTenant()->get();
+        $users = $isAdminOrManager ? \App\Models\User::where('tenant_id', auth()->user()->tenant_id)->get() : collect([$user]);
 
         return view('deals.edit', compact('deal', 'contacts', 'users', 'routePrefix'));
     }

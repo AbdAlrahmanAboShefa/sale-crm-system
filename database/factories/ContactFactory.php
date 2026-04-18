@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Contact;
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -13,6 +14,7 @@ class ContactFactory extends Factory
     public function definition(): array
     {
         return [
+            'tenant_id' => Tenant::factory(),
             'user_id' => User::factory(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),

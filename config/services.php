@@ -35,6 +35,24 @@ return [
         ],
     ],
     'openai' => [
-        'api_key' => env('OPENAI_API_KEY'),
+        'api_key' => env('AI_API_KEY'),
+    ],
+
+    'payment' => [
+        'default' => env('PAYMENT_GATEWAY', 'stripe'),
+
+        'stripe' => [
+            'public_key' => env('STRIPE_KEY'),
+            'secret_key' => env('STRIPE_SECRET'),
+            'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        ],
+
+        // Add more gateways here:
+        // 'paypal' => [
+        //     'client_id' => env('PAYPAL_CLIENT_ID'),
+        //     'secret' => env('PAYPAL_SECRET'),
+        //     'mode' => env('PAYPAL_MODE', 'sandbox'),
+        // ],
     ],
 ];
+

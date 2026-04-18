@@ -13,24 +13,54 @@ class UserController extends Controller
 {
     public function index(Request $request): View
     {
+        $user = auth()->user();
+        $tenant = $user->tenant;
+
         $users = User::with('roles')
+            ->where('tenant_id', $tenant->id)
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        return view('admin.users.index', compact('users'));
+        $userLimit = $tenant->getUserLimit();
+        $userCount = $tenant->getUserCount();
+        $canAddUser = $tenant->canAddUser();
+
+        return view('admin.users.index', compact('users', 'userLimit', 'userCount', 'canAddUser'));
     }
 
     public function create(): View
     {
-        return view('admin.users.create');
+        $tenant = auth()->user()->tenant;
+
+        if (! $tenant->canAddUser()) {
+            return view('admin.users.index', [
+                'users' => User::with('roles')->where('tenant_id', $tenant->id)->paginate(15),
+                'userLimit' => $tenant->getUserLimit(),
+                'userCount' => $tenant->getUserCount(),
+                'canAddUser' => false,
+            ])->with('error', "User limit reached. Your plan ({$tenant->plan}) allows {$tenant->getUserLimit()} users.");
+        }
+
+        return view('admin.users.create', [
+            'userLimit' => $tenant->getUserLimit(),
+            'userCount' => $tenant->getUserCount(),
+        ]);
     }
 
     public function store(UserRequest $request): RedirectResponse
     {
+        $tenant = auth()->user()->tenant;
+
+        if (! $tenant->canAddUser()) {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'User limit reached. Upgrade your plan to add more users.');
+        }
+
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
+            'tenant_id' => $tenant->id,
             'is_active' => true,
         ])->assignRole($request->role);
 
@@ -40,16 +70,32 @@ class UserController extends Controller
 
     public function edit(User $user): View
     {
-        return view('admin.users.edit', compact('user'));
+        $tenant = auth()->user()->tenant;
+
+        if ($user->tenant_id !== $tenant->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return view('admin.users.edit', [
+            'user' => $user,
+            'userLimit' => $tenant->getUserLimit(),
+            'userCount' => $tenant->getUserCount(),
+        ]);
     }
 
     public function show(User $user): View
     {
-        return view('admin.users.edit', compact('user'));
+        return $this->edit($user);
     }
 
     public function update(UserRequest $request, User $user): RedirectResponse
     {
+        $tenant = auth()->user()->tenant;
+
+        if ($user->tenant_id !== $tenant->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $user->name = $request->name;
         $user->email = $request->email;
 
@@ -66,6 +112,12 @@ class UserController extends Controller
 
     public function destroy(User $user): RedirectResponse
     {
+        $tenant = auth()->user()->tenant;
+
+        if ($user->tenant_id !== $tenant->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
         if (auth()->id() === $user->id) {
             return redirect()->route('admin.users.index')
                 ->with('error', 'You cannot deactivate your own account.');
@@ -80,6 +132,12 @@ class UserController extends Controller
 
     public function activate(User $user): RedirectResponse
     {
+        $tenant = auth()->user()->tenant;
+
+        if ($user->tenant_id !== $tenant->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
         if (auth()->id() === $user->id) {
             return redirect()->route('admin.users.index')
                 ->with('error', 'You cannot activate your own account.');

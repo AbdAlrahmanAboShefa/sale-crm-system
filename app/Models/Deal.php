@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,17 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Deal extends Model
 {
-    use HasFactory, SoftDeletes;
-
-    protected static function booted(): void
-    {
-        static::addGlobalScope('tenant', function ($query) {
-            $tenantId = auth()->user()?->tenant_id;
-            if ($tenantId) {
-                $query->where('tenant_id', $tenantId);
-            }
-        });
-    }
+    use BelongsToTenant, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'contact_id',
@@ -52,6 +43,11 @@ class Deal extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
     public function scopeOwnedBy($query, int $userId)
     {
         return $query->where('user_id', $userId);
@@ -59,6 +55,6 @@ class Deal extends Model
 
     public function daysInStage(): int
     {
-        return now()->diffInDays($this->updated_at);
+        return abs(now()->diffInDays($this->updated_at));
     }
 }

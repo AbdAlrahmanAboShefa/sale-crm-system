@@ -8,7 +8,7 @@ class DealService
 {
     public function getKanbanData(bool $isAdmin = false, ?int $userId = null): array
     {
-        $query = Deal::with(['contact', 'user']);
+        $query = Deal::forTenant()->with(['contact', 'user']);
 
         if (! $isAdmin && $userId) {
             $query->where('user_id', $userId);
@@ -31,7 +31,7 @@ class DealService
 
     public function getForecastValue(bool $isAdmin = false, ?int $userId = null): float
     {
-        $query = Deal::query()->whereNotIn('stage', ['Won', 'Lost']);
+        $query = Deal::forTenant()->whereNotIn('stage', ['Won', 'Lost']);
 
         if (! $isAdmin && $userId) {
             $query->where('user_id', $userId);
@@ -46,7 +46,7 @@ class DealService
 
     public function getFilteredDeals(array $filters, bool $isAdmin = false, ?int $userId = null): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
-        $query = Deal::with(['contact', 'user']);
+        $query = Deal::forTenant()->with(['contact', 'user']);
 
         if (! $isAdmin && $userId) {
             $query->where('user_id', $userId);

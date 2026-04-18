@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,17 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Contact extends Model
 {
-    use HasFactory, SoftDeletes;
-
-    protected static function booted(): void
-    {
-        static::addGlobalScope('tenant', function ($query) {
-            $tenantId = auth()->user()?->tenant_id;
-            if ($tenantId) {
-                $query->where('tenant_id', $tenantId);
-            }
-        });
-    }
+    use BelongsToTenant, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -44,6 +35,11 @@ class Contact extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
     }
 
     public function activities(): HasMany

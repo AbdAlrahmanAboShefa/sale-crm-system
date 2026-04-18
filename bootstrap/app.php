@@ -16,6 +16,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'set.locale' => \App\Http\Middleware\SetLocale::class,
+            'tenant.active' => \App\Http\Middleware\EnsureTenantIsActive::class,
+        ]);
+
+        // FIX: Exclude webhook routes from CSRF verification.
+        // Payment providers (Stripe, etc.) send server-to-server POST requests
+        // without a CSRF token — signature validation handles security instead.
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -39,8 +39,16 @@ class ContactController extends Controller
 
     public function store(ContactRequest $request): RedirectResponse
     {
+        $tenant = auth()->user()->tenant;
+
+        if (! $tenant->canAddContact()) {
+            return redirect()->route($this->getRoutePrefix().'.contacts.index')
+                ->with('error', "Contact limit reached. Your {$tenant->plan} plan allows {$tenant->getContactLimit()} contacts. Upgrade to add more.");
+        }
+
         $data = $request->validated();
         $data['user_id'] = auth()->id();
+        $data['tenant_id'] = auth()->user()->tenant_id;
         $data['tags'] = $request->tags ?? [];
         $data['custom_fields'] = $request->custom_fields ?? [];
 

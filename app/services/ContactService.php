@@ -10,7 +10,7 @@ class ContactService
 {
     public function getFilteredContacts(array $filters, ?int $userId = null, bool $isAdmin = false): LengthAwarePaginator
     {
-        $query = Contact::query();
+        $query = Contact::forTenant();
 
         if (! $isAdmin && $userId) {
             $query->where('user_id', $userId);

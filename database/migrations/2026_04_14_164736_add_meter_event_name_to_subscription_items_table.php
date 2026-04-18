@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('posts', function (Blueprint $table) {
-            $table->foreignIdfor(User::class, 'author_id')->constrained();
-            //   $table->foreign('author_id')->references('id')->on('users')->cascadeOnDelete();
+        Schema::table('subscription_items', function (Blueprint $table) {
+            $table->string('meter_event_name')->nullable()->after('quantity');
         });
     }
 
@@ -23,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('_posts', function (Blueprint $table) {
-            //
+        Schema::table('subscription_items', function (Blueprint $table) {
+            $table->dropColumn('meter_event_name');
         });
     }
 };

@@ -11,10 +11,11 @@ class DashboardService
 {
     public function getTotalPipelineValue(bool $isAdminOrManager = false, ?int $userId = null): float
     {
-        $cacheKey = "pipeline_value_{$userId}_{$isAdminOrManager}";
+        $tenantId = auth()->user()?->tenant_id ?? 'super';
+        $cacheKey = "pipeline_value_t{$tenantId}_u{$userId}_a{$isAdminOrManager}";
 
         return Cache::remember($cacheKey, 60, function () use ($isAdminOrManager, $userId) {
-            $query = Deal::whereNotIn('stage', ['Won', 'Lost']);
+            $query = Deal::forTenant()->whereNotIn('stage', ['Won', 'Lost']);
 
             if (! $isAdminOrManager && $userId) {
                 $query->where('user_id', $userId);
@@ -26,10 +27,12 @@ class DashboardService
 
     public function getWonThisMonth(bool $isAdminOrManager = false, ?int $userId = null): array
     {
-        $cacheKey = "won_month_{$userId}_{$isAdminOrManager}";
+        $tenantId = auth()->user()?->tenant_id ?? 'super';
+        $cacheKey = "won_month_t{$tenantId}_u{$userId}_a{$isAdminOrManager}";
 
         return Cache::remember($cacheKey, 60, function () use ($isAdminOrManager, $userId) {
-            $query = Deal::where('stage', 'Won')
+            $query = Deal::forTenant()
+                ->where('stage', 'Won')
                 ->whereMonth('updated_at', now()->month)
                 ->whereYear('updated_at', now()->year);
 
@@ -46,11 +49,12 @@ class DashboardService
 
     public function getConversionRate(bool $isAdminOrManager = false, ?int $userId = null): float
     {
-        $cacheKey = "conversion_rate_{$userId}_{$isAdminOrManager}";
+        $tenantId = auth()->user()?->tenant_id ?? 'super';
+        $cacheKey = "conversion_rate_t{$tenantId}_u{$userId}_a{$isAdminOrManager}";
 
         return Cache::remember($cacheKey, 60, function () use ($isAdminOrManager, $userId) {
-            $query = Deal::query();
-            $wonQuery = Deal::where('stage', 'Won');
+            $query = Deal::forTenant();
+            $wonQuery = Deal::forTenant()->where('stage', 'Won');
 
             if (! $isAdminOrManager && $userId) {
                 $query->where('user_id', $userId);
@@ -66,10 +70,12 @@ class DashboardService
 
     public function getOverdueActivities(bool $isAdminOrManager = false, ?int $userId = null): int
     {
-        $cacheKey = "overdue_activities_{$userId}_{$isAdminOrManager}";
+        $tenantId = auth()->user()?->tenant_id ?? 'super';
+        $cacheKey = "overdue_activities_t{$tenantId}_u{$userId}_a{$isAdminOrManager}";
 
         return Cache::remember($cacheKey, 60, function () use ($isAdminOrManager, $userId) {
-            $query = Activity::where('is_done', false)
+            $query = Activity::forTenant()
+                ->where('is_done', false)
                 ->where('due_date', '<', now());
 
             if (! $isAdminOrManager && $userId) {
@@ -82,7 +88,8 @@ class DashboardService
 
     public function getMonthlyRevenue(bool $isAdminOrManager = false, ?int $userId = null): array
     {
-        $query = Deal::where('stage', 'Won')
+        $query = Deal::forTenant()
+            ->where('stage', 'Won')
             ->where('updated_at', '>=', now()->subMonths(12));
 
         if (! $isAdminOrManager && $userId) {
@@ -112,7 +119,7 @@ class DashboardService
         $funnel = ['labels' => [], 'values' => []];
 
         foreach ($stages as $stage) {
-            $query = Deal::where('stage', $stage);
+            $query = Deal::forTenant()->where('stage', $stage);
 
             if (! $isAdminOrManager && $userId) {
                 $query->where('user_id', $userId);
@@ -127,10 +134,14 @@ class DashboardService
 
     public function getLeaderboard(): array
     {
-        return Cache::remember('leaderboard', 60, function () {
+        $tenantId = auth()->user()?->tenant_id ?? 'super';
+        $cacheKey = "leaderboard_t{$tenantId}";
+
+        return Cache::remember($cacheKey, 60, function () {
             return DB::table('users')
                 ->join('deals', 'users.id', '=', 'deals.user_id')
                 ->where('deals.stage', 'Won')
+                ->where('users.tenant_id', auth()->user()->tenant_id)
                 ->select(
                     'users.id',
                     'users.name',
@@ -146,7 +157,7 @@ class DashboardService
 
     public function getRecentActivities(bool $isAdminOrManager = false, ?int $userId = null): array
     {
-        $query = Activity::with(['deal', 'user', 'contact'])->orderBy('created_at', 'desc');
+        $query = Activity::forTenant()->with(['deal', 'user', 'contact'])->orderBy('created_at', 'desc');
 
         if (! $isAdminOrManager && $userId) {
             $query->where('user_id', $userId);
@@ -177,7 +188,7 @@ class DashboardService
 
     public function getTopDeals(bool $isAdminOrManager = false, ?int $userId = null): array
     {
-        $query = Deal::where('stage', '!=', 'Lost')->orderBy('value', 'desc');
+        $query = Deal::forTenant()->where('stage', '!=', 'Lost')->orderBy('value', 'desc');
 
         if (! $isAdminOrManager && $userId) {
             $query->where('user_id', $userId);

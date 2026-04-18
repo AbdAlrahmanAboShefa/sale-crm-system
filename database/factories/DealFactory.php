@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Contact;
 use App\Models\Deal;
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,6 +15,7 @@ class DealFactory extends Factory
     public function definition(): array
     {
         return [
+            'tenant_id' => Tenant::factory(),
             'contact_id' => Contact::factory(),
             'user_id' => User::factory(),
             'title' => fake()->sentence(3),

@@ -1,93 +1,79 @@
 <?php
 
-namespace Tests\Feature;
-
 use App\Models\Activity;
 use App\Models\Contact;
+use App\Models\Tenant;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class ActivityTest extends TestCase
-{
-    use RefreshDatabase;
+beforeEach(function () {
+    $this->tenant = Tenant::factory()->create();
 
-    private User $admin;
+    $this->admin = User::factory()->create(['tenant_id' => $this->tenant->id]);
+    $this->admin->assignRole('Admin');
 
-    private User $agent;
+    $this->agent = User::factory()->create(['tenant_id' => $this->tenant->id]);
+    $this->agent->assignRole('Agent');
 
-    private Contact $contact;
+    $this->contact = Contact::factory()->create([
+        'user_id' => $this->admin->id,
+        'tenant_id' => $this->tenant->id,
+    ]);
+});
 
-    protected function setUp(): void
-    {
-        parent::setUp();
+test('admin can view activities', function () {
+    $response = $this->actingAs($this->admin)->get('/admin/activities');
 
-        $this->admin = User::factory()->create();
-        $this->admin->assignRole('Admin');
+    $response->assertStatus(200);
+});
 
-        $this->agent = User::factory()->create();
-        $this->agent->assignRole('Agent');
+test('agent can create activity', function () {
+    $contact = Contact::factory()->create([
+        'user_id' => $this->agent->id,
+        'tenant_id' => $this->tenant->id,
+    ]);
 
-        $this->contact = Contact::factory()->create(['user_id' => $this->admin->id]);
-    }
+    $response = $this->actingAs($this->agent)->post('/agent/activities', [
+        'contact_id' => $contact->id,
+        'type' => 'Call',
+        'note' => 'Discussed project requirements',
+    ]);
 
-    public function test_admin_can_view_activities(): void
-    {
-        $response = $this->actingAs($this->admin)->get('/admin/activities');
-        $response->assertStatus(200);
-    }
+    expect(Activity::where('type', 'Call')->exists())->toBeTrue();
+});
 
-    public function test_agent_can_create_activity(): void
-    {
-        $contact = Contact::factory()->create(['user_id' => $this->agent->id]);
+test('activity requires type and note', function () {
+    $response = $this->actingAs($this->agent)->post('/agent/activities', [
+        'contact_id' => $this->contact->id,
+    ]);
 
-        $response = $this->actingAs($this->agent)->post('/agent/activities', [
-            'contact_id' => $contact->id,
-            'type' => 'Call',
-            'note' => 'Discussed project requirements',
-        ]);
+    $response->assertSessionHasErrors(['type', 'note']);
+});
 
-        $this->assertDatabaseHas('activities', [
-            'type' => 'Call',
-            'note' => 'Discussed project requirements',
-            'user_id' => $this->agent->id,
-        ]);
-    }
+test('activity can be marked done', function () {
+    $activity = Activity::factory()->create([
+        'contact_id' => $this->contact->id,
+        'user_id' => $this->admin->id,
+        'tenant_id' => $this->tenant->id,
+        'is_done' => false,
+    ]);
 
-    public function test_activity_requires_type_and_note(): void
-    {
-        $response = $this->actingAs($this->agent)->post('/agent/activities', [
-            'contact_id' => $this->contact->id,
-        ]);
+    $response = $this->actingAs($this->admin)
+        ->patchJson("/admin/activities/{$activity->id}/done");
 
-        $response->assertSessionHasErrors(['type', 'note']);
-    }
+    $response->assertJson(['success' => true]);
+    expect($activity->fresh()->is_done)->toBeTrue();
+});
 
-    public function test_activity_can_be_marked_done(): void
-    {
-        $activity = Activity::factory()->create([
-            'contact_id' => $this->contact->id,
-            'user_id' => $this->admin->id,
-            'is_done' => false,
-        ]);
+test('overdue activities are highlighted', function () {
+    Activity::factory()->create([
+        'contact_id' => $this->contact->id,
+        'user_id' => $this->admin->id,
+        'tenant_id' => $this->tenant->id,
+        'due_date' => now()->subDay(),
+        'is_done' => false,
+    ]);
 
-        $response = $this->actingAs($this->admin)
-            ->patchJson("/admin/activities/{$activity->id}/done");
+    $response = $this->actingAs($this->admin)->get('/admin/activities');
 
-        $response->assertJson(['success' => true]);
-        $this->assertDatabaseHas('activities', ['id' => $activity->id, 'is_done' => true]);
-    }
-
-    public function test_overdue_activities_are_highlighted(): void
-    {
-        Activity::factory()->create([
-            'contact_id' => $this->contact->id,
-            'user_id' => $this->admin->id,
-            'due_date' => now()->subDay(),
-            'is_done' => false,
-        ]);
-
-        $response = $this->actingAs($this->admin)->get('/admin/activities');
-        $response->assertStatus(200);
-    }
-}
+    $response->assertStatus(200);
+});

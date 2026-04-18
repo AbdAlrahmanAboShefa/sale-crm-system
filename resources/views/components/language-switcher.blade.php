@@ -2,7 +2,7 @@
     <button 
         @click="open = !open" 
         @click.away="open = false"
-        class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors text-slate-700"
+        class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-700/50 hover:bg-slate-600/50 transition-colors text-slate-300 hover:text-white border border-slate-600/50"
     >
         <i class="fas fa-globe"></i>
         <span class="text-sm font-medium uppercase">{{ app()->getLocale() }}</span>
@@ -17,19 +17,19 @@
         x-transition:leave="transition ease-in duration-75"
         x-transition:leave-start="transform opacity-100 scale-100"
         x-transition:leave-end="transform opacity-0 scale-95"
-        class="absolute mt-2 w-40 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50 {{ app()->getLocale() === 'ar' ? 'left-0' : 'right-0' }}"
-        style="left: 0;"
+        class="absolute mt-2 w-44 bg-slate-800 rounded-lg shadow-xl border border-slate-700 py-1 z-50 right-0"
+        style="display: none;"
     >
         <a 
             href="{{ route('language.switch', 'en') }}" 
-            class="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors {{ app()->getLocale() === 'en' ? 'bg-blue-50 text-blue-600 font-medium' : '' }}"
+            class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-colors {{ app()->getLocale() === 'en' ? 'bg-cyan-500/20 text-cyan-400 font-medium' : '' }}"
         >
             <span class="text-lg">🇺🇸</span>
             <span>English</span>
         </a>
         <a 
             href="{{ route('language.switch', 'ar') }}" 
-            class="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors {{ app()->getLocale() === 'ar' ? 'bg-blue-50 text-blue-600 font-medium' : '' }}"
+            class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-colors {{ app()->getLocale() === 'ar' ? 'bg-cyan-500/20 text-cyan-400 font-medium' : '' }}"
         >
             <span class="text-lg">🇸🇦</span>
             <span>العربية</span>

@@ -17,7 +17,7 @@ class ActivityController extends Controller
         $isAdminOrManager = $user->hasRole(['Admin', 'Manager']);
         $routePrefix = $this->getRoutePrefix();
 
-        $query = Activity::with(['contact', 'deal', 'user']);
+        $query = Activity::forTenant()->with(['contact', 'deal', 'user']);
 
         if (! $isAdminOrManager) {
             $query->where('user_id', $user->id);
@@ -43,8 +43,8 @@ class ActivityController extends Controller
     public function create(): View
     {
         $routePrefix = $this->getRoutePrefix();
-        $contacts = \App\Models\Contact::all();
-        $deals = \App\Models\Deal::where('stage', '!=', 'Lost')->where('stage', '!=', 'Won')->get();
+        $contacts = \App\Models\Contact::forTenant()->get();
+        $deals = \App\Models\Deal::forTenant()->where('stage', '!=', 'Lost')->where('stage', '!=', 'Won')->get();
 
         return view('activities.create', compact('contacts', 'deals', 'routePrefix'));
     }
@@ -53,6 +53,7 @@ class ActivityController extends Controller
     {
         $data = $request->validated();
         $data['user_id'] = auth()->id();
+        $data['tenant_id'] = auth()->user()->tenant_id;
         $data['is_done'] = $request->has('is_done');
 
         Activity::create($data);
@@ -73,8 +74,8 @@ class ActivityController extends Controller
         $this->authorizeActivity($activity);
         $routePrefix = $this->getRoutePrefix();
 
-        $contacts = \App\Models\Contact::all();
-        $deals = \App\Models\Deal::where('stage', '!=', 'Lost')->where('stage', '!=', 'Won')->get();
+        $contacts = \App\Models\Contact::forTenant()->get();
+        $deals = \App\Models\Deal::forTenant()->where('stage', '!=', 'Lost')->where('stage', '!=', 'Won')->get();
 
         return view('activities.edit', compact('activity', 'contacts', 'deals', 'routePrefix'));
     }

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Activity;
 use App\Models\Contact;
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,6 +18,7 @@ class ActivityFactory extends Factory
             'contact_id' => Contact::factory(),
             'deal_id' => null,
             'user_id' => User::factory(),
+            'tenant_id' => Tenant::factory(),
             'type' => fake()->randomElement(['Call', 'Meeting', 'Email', 'Task', 'Demo']),
             'note' => fake()->paragraph(),
             'outcome' => fake()->randomElement(['Positive', 'Neutral', 'Negative', null]),
